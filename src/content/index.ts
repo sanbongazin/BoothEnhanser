@@ -1,77 +1,93 @@
 import browser from 'webextension-polyfill';
 import type { ItemRecord, ItemType, SortMode, TabKey } from '../lib/types';
-import {
-  extractItemFromDocument,
-  extractNextPageUrl,
-  extractWishListEntries,
-} from '../lib/extractor';
 import { inferItemType } from '../lib/classify';
-import { getAllItems, getItem, pruneRemovedFavorites, putItem, setItemTypeOverride } from '../lib/dbClient';
+import {
+  getAllItems,
+  getItem,
+  pruneRemovedFavorites,
+  putItem,
+  setItemTypeOverride,
+} from '../lib/dbClient';
 import { sortItems } from '../lib/sort';
 import { selectPickupItems } from '../lib/pickup';
+import {
+  parseWishListApiResponse,
+  WISH_LISTS_JSON_URL,
+  wishListPageUrl,
+  type WishListApiItem,
+} from '../lib/wishListApi';
 import { filterByTab, renderTabBar } from './ui/tabs';
 import { renderSortControl } from './ui/sortControl';
 import { renderPickupWidget } from './ui/pickupWidget';
 import { renderItemList } from './ui/itemList';
 import type { ExtensionRequest } from '../messages';
 
-// 収集は「閲覧」の範囲に留める(自動操作はしない)ため、商品ページ取得の間隔を空ける
+// 収集は「閲覧」の範囲に留める(自動操作はしない)ため、JSON APIページ取得の間隔を空ける
 const FETCH_DELAY_MS = 300;
-// 再抽出済みの直近キャッシュを不要に再取得しないための猶予(ミリ秒)
-const STALE_AFTER_MS = 6 * 60 * 60 * 1000;
 
 function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-async function fetchDocument(url: string): Promise<Document> {
-  const res = await fetch(url, { credentials: 'include' });
-  const text = await res.text();
-  return new DOMParser().parseFromString(text, 'text/html');
-}
+// 実セッションで確認済み(2026-07-22): 素の fetch() だと {"item_ids":[...], "wishlists_counts":{...}}
+// という別形状のレスポンスが返る。BOOTH本体のSPAがAjax判別用に付けていると思われる
+// ヘッダーを付与することで、items/pagination付きの一覧レスポンスに切り替わることを期待する。
+const WISH_LIST_FETCH_HEADERS: HeadersInit = {
+  Accept: 'application/json',
+  'X-Requested-With': 'XMLHttpRequest',
+};
 
-async function collectWishListEntries(startDoc: Document): Promise<{ itemId: string; url: string }[]> {
-  const results: { itemId: string; url: string }[] = [];
-  let doc: Document | null = startDoc;
+/** 好きリストJSON API(全ページ)からアイテム一覧を取得する。 */
+async function fetchAllWishListItems(): Promise<WishListApiItem[]> {
+  const items: WishListApiItem[] = [];
+  let page = 1;
+  let url = WISH_LISTS_JSON_URL;
 
-  while (doc) {
-    results.push(...extractWishListEntries(doc));
-    const next = extractNextPageUrl(doc);
-    if (!next) break;
+  while (page) {
+    const res = await fetch(url, { credentials: 'include', headers: WISH_LIST_FETCH_HEADERS });
+    if (!res.ok) {
+      throw new Error(`wish_lists.json fetch failed: page=${page} status=${res.status}`);
+    }
+
+    const json: unknown = await res.json();
+    let parsedPage;
+    try {
+      parsedPage = parseWishListApiResponse(json);
+    } catch (cause) {
+      const preview = JSON.stringify(json).slice(0, 300);
+      throw new Error(`wish_lists.json unexpected shape at page=${page}: ${preview}`, { cause });
+    }
+    items.push(...parsedPage.items);
+
+    if (!parsedPage.pagination.nextPage || parsedPage.pagination.nextPage <= page) break;
+    page = parsedPage.pagination.nextPage;
+    url = wishListPageUrl(page);
     await sleep(FETCH_DELAY_MS);
-    doc = await fetchDocument(next);
   }
 
-  return results;
+  return items;
 }
 
-function isStale(item: ItemRecord | undefined): boolean {
-  if (!item) return true;
-  return Date.now() - new Date(item.updatedAt || item.registeredAt || 0).getTime() > STALE_AFTER_MS;
-}
-
-async function refreshItem(entry: { itemId: string; url: string }): Promise<void> {
-  const existing = await getItem(entry.itemId);
-  if (!isStale(existing)) return;
-
-  const doc = await fetchDocument(entry.url);
-  const parsed = extractItemFromDocument(doc, entry.url);
-  if (!parsed) return;
-
+/**
+ * JSON APIから得たアイテムをItemRecordへマージする。JSON APIには登録日・更新日・タグが
+ * 含まれないため、既存レコードの値を維持する(初回取得時は暫定でnowを入れる)。
+ */
+async function refreshItem(apiItem: WishListApiItem): Promise<void> {
+  const existing = await getItem(apiItem.itemId);
   const now = new Date().toISOString();
-  const itemType = inferItemType({ category: parsed.category, tags: parsed.tags });
+  const itemType = inferItemType({ category: apiItem.category, tags: existing?.tags ?? [] });
 
   const record: ItemRecord = {
-    itemId: parsed.itemId,
-    itemName: parsed.itemName,
-    shopName: parsed.shopName,
-    shopId: parsed.shopId,
-    price: parsed.price,
-    registeredAt: parsed.registeredAt ?? existing?.registeredAt ?? now,
-    updatedAt: parsed.updatedAt ?? now,
-    tags: parsed.tags,
+    itemId: apiItem.itemId,
+    itemName: apiItem.itemName,
+    shopName: apiItem.shopName,
+    shopId: apiItem.shopId,
+    price: apiItem.price,
+    registeredAt: existing?.registeredAt ?? now,
+    updatedAt: now,
+    tags: existing?.tags ?? [],
     avatarTags: existing?.avatarTags ?? [],
-    isAdult: parsed.isAdult,
+    isAdult: apiItem.isAdult,
     itemType,
     itemTypeOverride: existing?.itemTypeOverride ?? null,
     affinityScore: existing?.affinityScore ?? null,
@@ -84,12 +100,11 @@ async function refreshItem(entry: { itemId: string; url: string }): Promise<void
 }
 
 async function scanWishList(): Promise<void> {
-  const entries = await collectWishListEntries(document);
-  await pruneRemovedFavorites(entries.map((e) => e.itemId));
+  const apiItems = await fetchAllWishListItems();
+  await pruneRemovedFavorites(apiItems.map((item) => item.itemId));
 
-  for (const entry of entries) {
-    await refreshItem(entry);
-    await sleep(FETCH_DELAY_MS);
+  for (const apiItem of apiItems) {
+    await refreshItem(apiItem);
   }
 }
 
@@ -129,7 +144,9 @@ async function render(): Promise<void> {
   root.appendChild(renderTabBar(state.tab, (tab) => void ((state.tab = tab), render())));
   root.appendChild(renderSortControl(state.sort, (sort) => void ((state.sort = sort), render())));
 
-  const pickupItems = selectPickupItems(allItems, { forceReshuffle: state.reshuffleNonce || undefined });
+  const pickupItems = selectPickupItems(allItems, {
+    forceReshuffle: state.reshuffleNonce || undefined,
+  });
   root.appendChild(
     renderPickupWidget(pickupItems, () => {
       state.reshuffleNonce += 1;
@@ -139,7 +156,9 @@ async function render(): Promise<void> {
 
   const tabItems = filterByTab(allItems, state.tab);
   const sorted = sortItems(tabItems, state.sort);
-  root.appendChild(renderItemList(sorted, state.tab, (itemId, override) => void handleOverride(itemId, override)));
+  root.appendChild(
+    renderItemList(sorted, state.tab, (itemId, override) => void handleOverride(itemId, override)),
+  );
 }
 
 browser.runtime.onMessage.addListener((message: unknown) => {

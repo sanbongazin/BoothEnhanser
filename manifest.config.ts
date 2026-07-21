@@ -1,11 +1,15 @@
 import { defineManifest } from '@crxjs/vite-plugin';
 import pkg from './package.json';
 
-// TODO(verify-against-live-booth): 実際のお気に入り(スキ)一覧ページのURLパターンは
-// 未検証。ログイン中セッションで https://booth.pm/... 配下の実URLを確認して
-// content_scripts の matches を確定させること。
-const WISH_LIST_MATCH = 'https://booth.pm/*/users/*/wish_list*';
-const BOOTH_HOST_MATCH = ['https://booth.pm/*', 'https://*.booth.pm/*'];
+// 実セッションで確認済み(2026-07-21): 好きリストは booth.pm ではなく
+// accounts.booth.pm 配下。JSON API (https://accounts.booth.pm/wish_lists.json)
+// の存在も確認済みだが、レスポンス形は未検証。
+const WISH_LIST_MATCH = 'https://accounts.booth.pm/wish_lists*';
+const BOOTH_HOST_MATCH = [
+  'https://booth.pm/*',
+  'https://*.booth.pm/*',
+  'https://accounts.booth.pm/*',
+];
 
 export default defineManifest({
   manifest_version: 3,

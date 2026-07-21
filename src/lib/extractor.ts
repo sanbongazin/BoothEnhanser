@@ -7,12 +7,18 @@
 
 /** DOM フォールバックで使うCSSセレクタ。BOOTH側のマークアップ変更時はここだけ直す。 */
 export const SELECTORS = {
-  wishListItemLink: '.item-card a.item-card__link', // TODO(verify-against-live-booth)
-  price: '.price', // TODO(verify-against-live-booth)
-  registeredAt: '[data-registered-at]', // TODO(verify-against-live-booth)
-  category: '.item-category', // TODO(verify-against-live-booth)
-  adultBadge: '.item-card__badge--r18', // TODO(verify-against-live-booth)
-  nextPageLink: '.pagination a[rel="next"]', // TODO(verify-against-live-booth)
+  // 実セッションで確認済み(2026-07-21): 好きリスト(https://accounts.booth.pm/wish_lists)の
+  // 商品カードは `.item-card-wrapper` 配下に商品ページへのリンクが複数(サムネイル/タイトル)存在する。
+  wishListItemLink: '.item-card-wrapper a[href*="/items/"]',
+  price: '.price', // TODO(verify-against-live-booth): 商品詳細ページ側は未確認
+  registeredAt: '[data-registered-at]', // TODO(verify-against-live-booth): 商品詳細ページ側は未確認
+  category: '.item-category', // TODO(verify-against-live-booth): 商品詳細ページ側は未確認
+  adultBadge: '.item-card__badge--r18', // TODO(verify-against-live-booth): 商品詳細ページ側は未確認
+  // TODO(verify-against-live-booth): 好きリストのページネーションはリンクのhrefではなく
+  // JS駆動のクリックハンドラ(<div>)であり、rel="next"のようなアンカーは存在しないことを確認済み。
+  // https://accounts.booth.pm/wish_lists.json というJSON APIの存在を確認しているが、
+  // レスポンス形式(ページングパラメータ含む)は未検証。このセレクタは現状機能しない。
+  nextPageLink: '.pagination a[rel="next"]',
 } as const;
 
 /** 内部フィールド名 → schema.org Product上の(推定)パス。 */
@@ -68,7 +74,9 @@ function parseDomFallback(doc: Document): Partial<ParsedItem> {
     if (!Number.isNaN(numeric)) result.price = numeric;
   }
 
-  const registeredAt = doc.querySelector(SELECTORS.registeredAt)?.getAttribute('data-registered-at');
+  const registeredAt = doc
+    .querySelector(SELECTORS.registeredAt)
+    ?.getAttribute('data-registered-at');
   if (registeredAt) result.registeredAt = registeredAt;
 
   const category = doc.querySelector(SELECTORS.category)?.textContent?.trim();
@@ -94,15 +102,11 @@ export function extractItemFromDocument(doc: Document, url: string): ParsedItem 
   const domFallback = parseDomFallback(doc);
 
   const itemName = (jsonLd ? getByPath(jsonLd, JSONLD_FIELD_MAP.itemName) : undefined) as
-    | string
-    | undefined;
+    string | undefined;
   const shopName = (jsonLd ? getByPath(jsonLd, JSONLD_FIELD_MAP.shopName) : undefined) as
-    | string
-    | undefined;
+    string | undefined;
   const jsonLdPrice = (jsonLd ? getByPath(jsonLd, JSONLD_FIELD_MAP.price) : undefined) as
-    | number
-    | string
-    | undefined;
+    number | string | undefined;
 
   if (!itemName) return null;
 
@@ -123,16 +127,24 @@ export function extractItemFromDocument(doc: Document, url: string): ParsedItem 
   };
 }
 
-/** 好きリスト一覧ページから、現在表示されているアイテムのID/URLを抽出する。 */
+/**
+ * 好きリスト一覧ページから、現在表示されているアイテムのID/URLを抽出する。
+ * 1商品につきサムネイル/タイトルの2つのリンクがヒットするため、itemIdで重複除去する。
+ */
 export function extractWishListEntries(doc: Document): { itemId: string; url: string }[] {
   const links = Array.from(doc.querySelectorAll<HTMLAnchorElement>(SELECTORS.wishListItemLink));
-  return links
-    .map((a) => {
-      const url = a.href;
-      const itemId = extractItemIdFromUrl(url);
-      return itemId ? { itemId, url } : null;
-    })
-    .filter((entry): entry is { itemId: string; url: string } => entry !== null);
+  const seen = new Set<string>();
+  const entries: { itemId: string; url: string }[] = [];
+
+  for (const a of links) {
+    const url = a.href;
+    const itemId = extractItemIdFromUrl(url);
+    if (!itemId || seen.has(itemId)) continue;
+    seen.add(itemId);
+    entries.push({ itemId, url });
+  }
+
+  return entries;
 }
 
 /** 好きリスト一覧ページの「次へ」リンクURLを返す。最終ページならnull。 */

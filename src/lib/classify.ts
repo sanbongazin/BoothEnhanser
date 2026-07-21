@@ -1,9 +1,24 @@
 import type { ItemRecord, ItemType } from './types';
 import { AVATAR_KEYWORDS, NON_AVATAR_KEYWORDS } from './keywordDictionary';
 
-// TODO(verify-against-live-booth): BOOTHの実際のカテゴリ文字列が未確認のため空。
-// 実ページのカテゴリ情報を確認し次第、埋めること。
-export const CATEGORY_TO_ITEM_TYPE: Record<string, ItemType> = {};
+// 実セッションで確認済み(2026-07-21): wish_lists.json APIのcategory.name.jaに入る
+// 実際の値。「3Dキャラクター」がアバター本体、それ以外(衣装・髪型・装飾品・小道具・
+// 環境/ワールド・テクスチャ・ツール・その他モデル等)はアバター以外として扱う。
+// ここに無い未知のカテゴリはキーワード辞書によるフォールバックへ回る。
+export const CATEGORY_TO_ITEM_TYPE: Record<string, ItemType> = {
+  '3Dキャラクター': 'avatar',
+  '3D衣装': 'non-avatar',
+  '3D髪型': 'non-avatar',
+  '3D装飾品': 'non-avatar',
+  '3D小道具': 'non-avatar',
+  '3D環境・ワールド': 'non-avatar',
+  '3Dテクスチャ': 'non-avatar',
+  '3Dツール・システム': 'non-avatar',
+  '3Dモデル（その他）': 'non-avatar',
+  ゲーム関連商品: 'non-avatar',
+  ソフトウェア: 'non-avatar',
+  'ハードウェア・ガジェット': 'non-avatar',
+};
 
 function includesKeyword(haystack: string, keywords: readonly string[]): boolean {
   const lower = haystack.toLowerCase();

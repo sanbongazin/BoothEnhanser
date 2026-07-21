@@ -153,7 +153,13 @@ npm run typecheck
 
 拡張機能の読み込み方: Chromeの `chrome://extensions` で「デベロッパーモード」を有効にし、「パッケージ化されていない拡張機能を読み込む」から `dist/` ディレクトリを選択する。
 
-**フェーズ1時点の既知の未検証事項**: BOOTHの好きリストページの実URLパターン、商品ページのJSON-LDフィールド名、カテゴリ文字列は実際のログイン中セッションでの確認待ち。該当箇所は `src/lib/extractor.ts` と `src/lib/classify.ts` に `TODO(verify-against-live-booth)` としてコメントを残している。
+**フェーズ1時点の既知の未検証事項**:
+
+- ✅ 検証済み(2026-07-21): 好きリストページの実URLは `https://accounts.booth.pm/wish_lists`(`booth.pm`ではなく別ドメイン)。商品カードのDOM構造・商品リンクセレクタも実データで確認し、`extractor.ts`を修正済み。
+- ⚠️ 新たに判明した課題: 好きリストのページネーションはアンカーリンクではなくJS駆動のクリックハンドラで、`rel="next"`のようなリンクを辿る現在の`extractNextPageUrl`は機能しない。ページ側に`https://accounts.booth.pm/wish_lists.json`というJSON APIの存在を示すメタデータがあり、DOM走査よりこちらを使う方が堅牢な可能性が高いが、レスポンス形式は未検証。
+- 未検証のまま: 商品詳細ページ側のJSON-LDフィールド名、価格・カテゴリ・登録日・R-18バッジのセレクタ、タグ取得方法。
+
+該当箇所は `src/lib/extractor.ts` と `src/lib/classify.ts` に `TODO(verify-against-live-booth)` としてコメントを残している。
 
 ## 売り手側プロジェクトとの関係
 
