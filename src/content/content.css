@@ -1,0 +1,60 @@
+/* BOOTH側のスタイルと衝突しないよう、全要素に .be- プレフィックスを付けている */
+
+.be-root {
+  margin: 16px 0;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.be-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.be-tab {
+  padding: 4px 12px;
+  border: 1px solid #ccc;
+  border-radius: 999px;
+  background: #fff;
+  cursor: pointer;
+}
+
+.be-tab--active {
+  background: #333;
+  color: #fff;
+  border-color: #333;
+}
+
+.be-sort-control {
+  margin-bottom: 8px;
+}
+
+.be-pickup {
+  margin-bottom: 12px;
+  padding: 8px;
+  background: #f7f7f7;
+  border-radius: 6px;
+}
+
+.be-pickup__list {
+  list-style: none;
+  padding: 0;
+  margin: 4px 0;
+}
+
+.be-item-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.be-item-list__item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 0;
+  border-bottom: 1px solid #eee;
+}

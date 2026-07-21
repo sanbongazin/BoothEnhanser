@@ -1,0 +1,24 @@
+body {
+  font-family: system-ui, sans-serif;
+  font-size: 14px;
+  padding: 16px;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+th,
+td {
+  border: 1px solid #ddd;
+  padding: 4px 8px;
+  text-align: left;
+}
+
+input {
+  width: 100%;
+  box-sizing: border-box;
+}
