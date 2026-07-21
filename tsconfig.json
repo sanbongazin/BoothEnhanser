@@ -13,7 +13,7 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-    "types": ["vite/client", "chrome"]
+    "types": ["vite/client"]
   },
   "include": ["src", "test", "vite.config.ts", "manifest.config.ts"]
 }

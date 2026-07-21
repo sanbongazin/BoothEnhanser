@@ -140,6 +140,21 @@ Amazon的な協調フィルタリングではなく、**ユーザー自身の購
 - Intl.Collator('ja')(あいうえお順ソート近似)
 - LLM API(自動タグ付けの精度向上・任意、ユーザー自身のAPIキーを使用)
 
+## セットアップ・開発
+
+```bash
+npm install
+npm run dev      # 開発ビルド(watch)。dist/ をChromeの「パッケージ化されていない拡張機能」として読み込む
+npm run build    # 本番ビルド
+npm run test     # 純粋ロジック(分類・並び替え・ピックアップ等)のユニットテスト(Vitest)
+npm run lint     # ESLint
+npm run typecheck
+```
+
+拡張機能の読み込み方: Chromeの `chrome://extensions` で「デベロッパーモード」を有効にし、「パッケージ化されていない拡張機能を読み込む」から `dist/` ディレクトリを選択する。
+
+**フェーズ1時点の既知の未検証事項**: BOOTHの好きリストページの実URLパターン、商品ページのJSON-LDフィールド名、カテゴリ文字列は実際のログイン中セッションでの確認待ち。該当箇所は `src/lib/extractor.ts` と `src/lib/classify.ts` に `TODO(verify-against-live-booth)` としてコメントを残している。
+
 ## 売り手側プロジェクトとの関係
 
 売り手側(問い合わせ管理サービス、GitHub Issue/Google Form連携、サブスク型)は完全に別プロジェクト・別リポジトリとして管理する。技術的な依存関係はないが、将来的に出品者ダッシュボードから買い手側の辞書データへ情報提供する等の連携可能性はある。買い手側=無料OSSで信頼構築、売り手側=有料SaaSで収益化、という役割分担とする。
