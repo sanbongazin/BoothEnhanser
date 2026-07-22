@@ -1,4 +1,4 @@
-import type { ItemRecord, ItemType, TabKey, ViewMode } from '../../lib/types';
+import type { ItemRecord, ItemType, TabKey } from '../../lib/types';
 import { resolveItemType } from '../../lib/classify';
 
 type OverrideHandler = (itemId: string, override: ItemType) => void;
@@ -7,10 +7,8 @@ function formatPrice(price: number): string {
   return `¥${price.toLocaleString('ja-JP')}`;
 }
 
-// サムネイル上へのオーバーレイ表示なので、タグ数が多い商品でもカードの高さが揃うよう
-// カード表示では控えめな件数に絞る(リスト表示はサムネイルが無く高さの制約も無いため多めに出す)。
-const MAX_VISIBLE_AVATAR_TAGS_CARD = 3;
-const MAX_VISIBLE_AVATAR_TAGS_LIST = 6;
+// サムネイル上へのオーバーレイ表示なので、タグ数が多い商品でもカードの高さが揃うよう控えめな件数に絞る。
+const MAX_VISIBLE_AVATAR_TAGS = 3;
 const AVATAR_TAGS_AREA_CLASS = 'be-avatar-tags-area';
 
 /**
@@ -127,7 +125,7 @@ function renderCard(
   }
 
   // 対応アバターのタグはサムネイル上にオーバーレイ表示する(カードの高さを揃えるため)
-  const avatarTagsArea = renderAvatarTagsArea(item, MAX_VISIBLE_AVATAR_TAGS_CARD);
+  const avatarTagsArea = renderAvatarTagsArea(item, MAX_VISIBLE_AVATAR_TAGS);
   if (avatarTagsArea) thumbWrap.appendChild(avatarTagsArea);
 
   link.appendChild(thumbWrap);
@@ -161,62 +159,13 @@ function renderCard(
   return card;
 }
 
-function renderListRow(
-  item: ItemRecord,
-  tab: TabKey,
-  isPickedUp: boolean,
-  onOverride: OverrideHandler,
-): HTMLElement {
-  const row = document.createElement('li');
-  row.className = 'be-row' + (isPickedUp ? ' be-row--pickup' : '');
-  row.dataset.beItemId = item.itemId;
-
-  const link = document.createElement('a');
-  link.className = 'be-row__link';
-  link.href = item.url;
-  link.target = '_blank';
-  link.rel = 'noopener noreferrer';
-  link.textContent = `${item.itemName}(${item.shopName}) — ${formatPrice(item.price)}`;
-  row.appendChild(link);
-
-  if (item.isAdult) {
-    const badge = document.createElement('span');
-    badge.className = 'be-row__badge';
-    badge.textContent = 'R-18';
-    row.appendChild(badge);
-  }
-
-  if (isPickedUp) {
-    row.appendChild(renderPickupBubble());
-  }
-
-  const avatarTagsArea = renderAvatarTagsArea(item, MAX_VISIBLE_AVATAR_TAGS_LIST);
-  if (avatarTagsArea) row.appendChild(avatarTagsArea);
-
-  if (tab === 'other') {
-    row.appendChild(renderOverrideControls(item, onOverride));
-  }
-
-  return row;
-}
-
-/** フィルタ・ソート済みの商品一覧を、カード表示またはリスト表示で描画する。 */
+/** フィルタ・ソート済みの商品一覧をカード表示で描画する。 */
 export function renderItemGrid(
   items: readonly ItemRecord[],
   tab: TabKey,
-  viewMode: ViewMode,
   pickedUpItemIds: ReadonlySet<string>,
   onOverride: OverrideHandler,
 ): HTMLElement {
-  if (viewMode === 'list') {
-    const list = document.createElement('ul');
-    list.className = 'be-list';
-    for (const item of items) {
-      list.appendChild(renderListRow(item, tab, pickedUpItemIds.has(item.itemId), onOverride));
-    }
-    return list;
-  }
-
   const grid = document.createElement('div');
   grid.className = 'be-grid';
   for (const item of items) {
@@ -238,17 +187,9 @@ export function updateItemAvatarTagsInPlace(container: ParentNode, item: ItemRec
 
   target.querySelector(`.${AVATAR_TAGS_AREA_CLASS}`)?.remove();
 
-  // カード表示ならサムネイル上のオーバーレイ内、リスト表示ならリンクの後ろに挿入する
   const thumbWrap = target.querySelector<HTMLElement>('.be-card__thumb-wrap');
-  if (thumbWrap) {
-    const avatarTagsArea = renderAvatarTagsArea(item, MAX_VISIBLE_AVATAR_TAGS_CARD);
-    if (avatarTagsArea) thumbWrap.appendChild(avatarTagsArea);
-    return;
-  }
+  if (!thumbWrap) return;
 
-  const overrideEl = target.querySelector('.be-override');
-  const avatarTagsArea = renderAvatarTagsArea(item, MAX_VISIBLE_AVATAR_TAGS_LIST);
-  if (!avatarTagsArea) return;
-  if (overrideEl) target.insertBefore(avatarTagsArea, overrideEl);
-  else target.appendChild(avatarTagsArea);
+  const avatarTagsArea = renderAvatarTagsArea(item, MAX_VISIBLE_AVATAR_TAGS);
+  if (avatarTagsArea) thumbWrap.appendChild(avatarTagsArea);
 }

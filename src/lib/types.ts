@@ -61,5 +61,3 @@ export type SortMode =
  * 操作可能なまま残る)。
  */
 export type TabKey = 'all' | 'avatar' | 'non-avatar-all-ages' | 'non-avatar-adult' | 'other';
-
-export type ViewMode = 'card' | 'list';

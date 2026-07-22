@@ -1,5 +1,5 @@
 import browser from 'webextension-polyfill';
-import type { ItemRecord, ItemType, SortMode, TabKey, ViewMode } from '../lib/types';
+import type { ItemRecord, ItemType, SortMode, TabKey } from '../lib/types';
 import { inferItemType, resolveItemType } from '../lib/classify';
 import {
   fetchHtml,
@@ -19,7 +19,6 @@ import {
 } from '../lib/wishListApi';
 import { filterByTab, renderTabBar } from './ui/tabs';
 import { renderSortControl } from './ui/sortControl';
-import { renderViewModeControl } from './ui/viewModeControl';
 import { renderSearchControl } from './ui/searchControl';
 import { renderItemGrid, updateItemAvatarTagsInPlace } from './ui/itemGrid';
 import { filterBySearchQuery } from '../lib/search';
@@ -146,14 +145,12 @@ async function scanAvatarCompatTags(): Promise<void> {
 interface State {
   tab: TabKey;
   sort: SortMode;
-  viewMode: ViewMode;
   searchQuery: string;
 }
 
 const state: State = {
   tab: 'non-avatar-all-ages',
   sort: 'registered-new',
-  viewMode: 'card',
   searchQuery: '',
 };
 
@@ -311,9 +308,6 @@ async function render(): Promise<void> {
   const rightControls = document.createElement('div');
   rightControls.className = 'be-controls__right';
   rightControls.appendChild(
-    renderViewModeControl(state.viewMode, (viewMode) => void ((state.viewMode = viewMode), render())),
-  );
-  rightControls.appendChild(
     renderSortControl(state.sort, (sort) => void ((state.sort = sort), render())),
   );
   controls.appendChild(rightControls);
@@ -333,7 +327,7 @@ async function render(): Promise<void> {
     root.appendChild(empty);
   } else {
     root.appendChild(
-      renderItemGrid(sorted, state.tab, state.viewMode, pickedUpItemIds, (itemId, override) =>
+      renderItemGrid(sorted, state.tab, pickedUpItemIds, (itemId, override) =>
         void handleOverride(itemId, override),
       ),
     );

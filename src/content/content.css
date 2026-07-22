@@ -129,30 +129,6 @@
   padding: 4px 8px;
 }
 
-.be-view-toggle {
-  display: flex;
-  gap: 4px;
-}
-
-.be-view-toggle__button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 28px;
-  height: 28px;
-  padding: 0;
-  border: none;
-  border-radius: 4px;
-  background: var(--be-tab-bg-inactive);
-  color: var(--be-text-tab-inactive);
-  cursor: pointer;
-}
-
-.be-view-toggle__button--active {
-  background: var(--be-tab-bg-active);
-  color: #fff;
-}
-
 .be-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
@@ -257,51 +233,6 @@
   border-right: 4px solid transparent;
   border-top: 5px solid var(--be-accent);
   transform: translateX(-50%);
-}
-
-/* リスト表示では絶対配置(サムネイル前提)ではなく、他のバッジ同様インラインで並べる */
-.be-row .be-pickup-bubble {
-  position: static;
-  display: inline-block;
-}
-
-.be-row .be-pickup-bubble::after {
-  display: none;
-}
-
-.be-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.be-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 0;
-  border-bottom: 1px solid var(--be-border);
-}
-
-.be-row--pickup {
-  background: rgba(252, 77, 80, 0.06);
-}
-
-.be-row__link {
-  color: var(--be-text);
-  text-decoration: none;
-}
-
-.be-row__link:hover {
-  color: var(--be-link);
-}
-
-.be-row__badge {
-  padding: 1px 6px;
-  font-size: 11px;
-  color: #fff;
-  background: var(--be-text);
-  border-radius: 2px;
 }
 
 .be-avatar-tags-area {
