@@ -1,11 +1,86 @@
-body {
-  width: 240px;
-  padding: 12px;
-  font-family: system-ui, sans-serif;
-  font-size: 14px;
+:root {
+  --be-text: #252f3d;
+  --be-text-muted: #666666;
+  --be-link: #1b7f8c;
+  --be-link-hover: #145f69;
+  --be-brand-accent: #4f6fd6;
+  --be-brand-accent-hover: #3f5bc0;
+  --be-border: rgba(0, 0, 0, 0.08);
+  --be-font:
+    -apple-system, 'system-ui', Avenir, 'Helvetica Neue', 'Segoe UI', Arial, 'ヒラギノ角ゴ ProN',
+    'Hiragino Kaku Gothic ProN', メイリオ, Meiryo, 'ＭＳ Ｐゴシック', sans-serif;
 }
 
-h1 {
-  font-size: 16px;
-  margin: 0 0 8px;
+body {
+  width: 280px;
+  margin: 0;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-family: var(--be-font);
+  font-size: 14px;
+  color: var(--be-text);
+}
+
+.be-popup__header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--be-border);
+}
+
+.be-logo {
+  flex-shrink: 0;
+}
+
+.be-popup__wordmark {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--be-text);
+}
+
+.be-popup__tagline {
+  margin: 0;
+  font-size: 12.5px;
+  color: var(--be-text-muted);
+}
+
+.be-popup__count {
+  margin: 0;
+  font-size: 11px;
+  color: var(--be-text-muted);
+}
+
+.be-popup__rescan {
+  display: block;
+  width: 100%;
+  padding: 7px 0;
+  border: none;
+  border-radius: 6px;
+  background: var(--be-brand-accent);
+  color: #fff;
+  font-family: inherit;
+  font-size: 12px;
+  text-align: center;
+  cursor: pointer;
+}
+
+.be-popup__rescan:hover {
+  background: var(--be-brand-accent-hover);
+}
+
+.be-popup__options-link {
+  margin: 0;
+  font-size: 11px;
+}
+
+.be-popup__options-link a {
+  color: var(--be-link);
+  text-decoration: none;
+}
+
+.be-popup__options-link a:hover {
+  color: var(--be-link-hover);
 }

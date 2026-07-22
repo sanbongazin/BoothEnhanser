@@ -4,8 +4,9 @@
    場合はここだけ直せば追従できる。 */
 
 :root {
-  --be-font: -apple-system, 'system-ui', Avenir, 'Helvetica Neue', 'Segoe UI', Arial,
-    'ヒラギノ角ゴ ProN', 'Hiragino Kaku Gothic ProN', メイリオ, Meiryo, 'ＭＳ Ｐゴシック', sans-serif;
+  --be-font:
+    -apple-system, 'system-ui', Avenir, 'Helvetica Neue', 'Segoe UI', Arial, 'ヒラギノ角ゴ ProN',
+    'Hiragino Kaku Gothic ProN', メイリオ, Meiryo, 'ＭＳ Ｐゴシック', sans-serif;
   --be-text: #252f3d; /* 見出し・アクティブタブの文字色 */
   --be-text-muted: #666666; /* 価格などの補助テキスト */
   --be-text-tab-inactive: #474747;
@@ -14,6 +15,9 @@
   --be-tab-bg-active: #252f3d;
   --be-tab-bg-inactive: rgba(0, 0, 0, 0.04);
   --be-border: rgba(0, 0, 0, 0.08);
+  /* design_handoff_logo_ui: 拡張機能固有のブランドアクセント(ロゴ・検索アイコン・
+     ピックアップ表示に使用)。BOOTH本来のCTA/R-18等は --be-accent(赤)のまま維持する。 */
+  --be-brand-accent: #4f6fd6;
 }
 
 .be-root {
@@ -113,6 +117,14 @@
   background: var(--be-border);
 }
 
+.be-search__icon {
+  position: absolute;
+  top: 50%;
+  right: 8px;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
 .be-search__empty {
   padding: 24px 0;
   color: var(--be-text-muted);
@@ -143,7 +155,7 @@
 }
 
 .be-card--pickup {
-  outline: 2px solid var(--be-accent);
+  outline: 2px solid var(--be-brand-accent);
   outline-offset: 4px;
 }
 
@@ -217,7 +229,7 @@
   font-size: 11px;
   font-weight: 600;
   color: #fff;
-  background: var(--be-accent);
+  background: var(--be-brand-accent);
   border-radius: 999px;
   white-space: nowrap;
 }
@@ -231,7 +243,7 @@
   height: 0;
   border-left: 4px solid transparent;
   border-right: 4px solid transparent;
-  border-top: 5px solid var(--be-accent);
+  border-top: 5px solid var(--be-brand-accent);
   transform: translateX(-50%);
 }
 

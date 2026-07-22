@@ -6,10 +6,25 @@
     <link rel="stylesheet" href="./popup.css" />
   </head>
   <body>
-    <h1>BoothEnhanser</h1>
-    <p id="item-count">キャッシュ件数: -</p>
-    <button id="rescan-button" type="button">今すぐ再スキャン</button>
-    <p><a id="options-link" href="#">詳細設定</a></p>
+    <header class="be-popup__header">
+      <svg class="be-logo" width="20" height="20" viewBox="0 0 56 56" aria-hidden="true">
+        <rect x="4" y="4" width="48" height="48" rx="14" fill="#252f3d"></rect>
+        <circle cx="18" cy="18" r="4" fill="#4f6fd6"></circle>
+        <polyline
+          points="18,30 25,37 38,20"
+          fill="none"
+          stroke="#4f6fd6"
+          stroke-width="4"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        ></polyline>
+      </svg>
+      <span class="be-popup__wordmark">BoothEnhanser</span>
+    </header>
+    <p class="be-popup__tagline">好きリストを、整えて選ぶ。</p>
+    <p id="item-count" class="be-popup__count">キャッシュ件数: -</p>
+    <button id="rescan-button" class="be-popup__rescan" type="button">今すぐ再スキャン</button>
+    <p class="be-popup__options-link"><a id="options-link" href="#">詳細設定</a></p>
     <script type="module" src="./main.ts"></script>
   </body>
 </html>

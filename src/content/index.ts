@@ -28,6 +28,10 @@ import type { ExtensionRequest } from '../messages';
 const FETCH_DELAY_MS = 300;
 // 商品詳細ページは一覧APIより重いため、間隔をやや長めに取る
 const AVATAR_SCAN_DELAY_MS = 400;
+// 初回スキャン時など未スキャン件数が多いユーザーでも、1回の実行で商品詳細ページへ
+// 連続アクセスする件数を抑えるための上限。超過分は次回のスキャン(再訪問・手動再スキャン・
+// 日次alarm)で続きから処理される。
+const MAX_AVATAR_SCAN_PER_RUN = 50;
 
 function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -112,10 +116,13 @@ async function scanWishList(): Promise<void> {
 /**
  * アバター以外の商品について、商品詳細ページから対応アバター候補を抽出してavatarTagsを埋める。
  * 1商品につき1回だけ取得すればよいので、avatarTagsScannedAtが未設定の商品のみを対象にする。
+ * MAX_AVATAR_SCAN_PER_RUNで1回の実行あたりの件数を絞り、残りは次回以降の呼び出しに委ねる。
  */
 async function scanAvatarCompatTags(): Promise<void> {
   const allItems = await getAllItems();
-  const targets = allItems.filter((item) => resolveItemType(item) === 'non-avatar'); // DEBUG: 抽出ロジック改善を反映するため一時的にキャッシュ条件を無視
+  const targets = allItems
+    .filter((item) => resolveItemType(item) === 'non-avatar' && item.avatarTagsScannedAt === null)
+    .slice(0, MAX_AVATAR_SCAN_PER_RUN);
 
   for (const item of targets) {
     const scannedAt = new Date().toISOString();
@@ -267,7 +274,10 @@ async function handleOverride(itemId: string, override: ItemType): Promise<void>
  * カーソル位置を保存・復元する。searchControl.ts側はIME変換中・入力の間引き(debounce)を
  * 行っているが、debounce後に発火するrender()自体はフォーカスを保持しないため、ここで補う。
  */
-function captureSearchInputFocus(): { selectionStart: number | null; selectionEnd: number | null } | null {
+function captureSearchInputFocus(): {
+  selectionStart: number | null;
+  selectionEnd: number | null;
+} | null {
   const active = document.activeElement;
   if (!(active instanceof HTMLInputElement) || !active.classList.contains('be-search__input')) {
     return null;
@@ -327,8 +337,11 @@ async function render(): Promise<void> {
     root.appendChild(empty);
   } else {
     root.appendChild(
-      renderItemGrid(sorted, state.tab, pickedUpItemIds, (itemId, override) =>
-        void handleOverride(itemId, override),
+      renderItemGrid(
+        sorted,
+        state.tab,
+        pickedUpItemIds,
+        (itemId, override) => void handleOverride(itemId, override),
       ),
     );
   }
@@ -339,9 +352,7 @@ async function render(): Promise<void> {
 browser.runtime.onMessage.addListener((message: unknown) => {
   const msg = message as ExtensionRequest;
   if (msg?.type === 'RESCAN_REQUESTED') {
-    void scanWishList()
-      .then(render)
-      .then(scanAvatarCompatTags);
+    void scanWishList().then(render).then(scanAvatarCompatTags);
   }
 });
 

@@ -36,8 +36,11 @@ jobs:
       - name: Test
         run: npm run test
 
-      - name: Build
+      - name: Build (Chrome/Edge)
         run: npm run build
+
+      - name: Build (Firefox)
+        run: npm run build:firefox
 
       - name: Audit dependencies
         run: npm audit --audit-level=high

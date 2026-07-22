@@ -1,24 +1,86 @@
+:root {
+  --be-text: #252f3d;
+  --be-text-muted: #666666;
+  --be-border: rgba(0, 0, 0, 0.08);
+  --be-font:
+    -apple-system, 'system-ui', Avenir, 'Helvetica Neue', 'Segoe UI', Arial, 'ヒラギノ角ゴ ProN',
+    'Hiragino Kaku Gothic ProN', メイリオ, Meiryo, 'ＭＳ Ｐゴシック', sans-serif;
+}
+
+html {
+  background: #f5f6f8;
+}
+
 body {
-  font-family: system-ui, sans-serif;
-  font-size: 14px;
-  padding: 16px;
+  box-sizing: border-box;
   max-width: 720px;
-  margin: 0 auto;
+  margin: 32px auto;
+  padding: 22px;
+  background: #fff;
+  border: 1px solid var(--be-border);
+  border-radius: 10px;
+  font-family: var(--be-font);
+  font-size: 14px;
+  color: var(--be-text);
+}
+
+h1 {
+  margin: 0 0 18px;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+section + section {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid var(--be-border);
+}
+
+section h2 {
+  margin: 0 0 10px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--be-text);
+}
+
+section > p {
+  margin: 0 0 10px;
+  font-size: 12px;
+  color: var(--be-text-muted);
 }
 
 table {
   border-collapse: collapse;
   width: 100%;
+  font-size: 13px;
 }
 
 th,
 td {
-  border: 1px solid #ddd;
-  padding: 4px 8px;
+  border-bottom: 1px solid var(--be-border);
+  padding: 6px 8px;
   text-align: left;
+}
+
+th {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--be-text-muted);
 }
 
 input {
   width: 100%;
   box-sizing: border-box;
+  padding: 4px 6px;
+  border: 1px solid var(--be-border);
+  border-radius: 4px;
+  font-family: inherit;
+  font-size: 13px;
+  color: var(--be-text);
+}
+
+#keyword-dictionary p {
+  margin: 4px 0;
+  font-size: 11px;
+  color: var(--be-text-muted);
 }
