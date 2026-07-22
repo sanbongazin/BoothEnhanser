@@ -1,9 +1,9 @@
 import { defineManifest } from '@crxjs/vite-plugin';
 import pkg from './package.json';
 
-// 実セッションで確認済み(2026-07-21): 好きリストは booth.pm ではなく
-// accounts.booth.pm 配下。JSON API (https://accounts.booth.pm/wish_lists.json)
-// の存在も確認済みだが、レスポンス形は未検証。
+// 実セッションで確認済み(2026-07-22): 好きリストは booth.pm ではなく
+// accounts.booth.pm 配下。一覧取得には wish_list_name_items.json を使う
+// (詳細は src/lib/wishListApi.ts のコメントを参照)。
 const WISH_LIST_MATCH = 'https://accounts.booth.pm/wish_lists*';
 const BOOTH_HOST_MATCH = [
   'https://booth.pm/*',

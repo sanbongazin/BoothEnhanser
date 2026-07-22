@@ -10,13 +10,20 @@ export interface ItemRecord {
   itemName: string;
   shopName: string;
   shopId: string;
+  /** 商品ページの絶対URL */
+  url: string;
+  /** カード表示用サムネイル画像URL */
+  thumbnailUrl: string;
   price: number;
   /** ISO 8601 */
   registeredAt: string;
   /** ISO 8601 */
   updatedAt: string;
   tags: string[];
+  /** 対応アバター名候補(商品詳細ページの説明文/バリエーション名からベストエフォートで抽出) */
   avatarTags: string[];
+  /** 商品詳細ページを対応アバター抽出のために取得済みか。ISO 8601、未取得ならnull */
+  avatarTagsScannedAt: string | null;
   isAdult: boolean;
   itemType: ItemType;
   itemTypeOverride: ItemType | null;
@@ -47,5 +54,12 @@ export type SortMode =
   | 'item-name-ja'
   | 'random';
 
-/** アバターにはR-18分岐がないため、タブ構成はこの3種+アバター以外のサブタブで表現する */
-export type TabKey = 'avatar' | 'non-avatar-all-ages' | 'non-avatar-adult' | 'other';
+/**
+ * アバターにはR-18分岐がないため、タブ構成はこの3種+アバター以外のサブタブで表現する。
+ * 'all'は絞り込みなしで全件を自前グリッドに表示する通常のタブ(BOOTHネイティブの
+ * フォルダタブ「すべて/未分類/…」・「スキの管理」とは独立に、常にBOOTHネイティブ側は
+ * 操作可能なまま残る)。
+ */
+export type TabKey = 'all' | 'avatar' | 'non-avatar-all-ages' | 'non-avatar-adult' | 'other';
+
+export type ViewMode = 'card' | 'list';

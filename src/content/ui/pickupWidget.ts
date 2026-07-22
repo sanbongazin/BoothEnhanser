@@ -1,5 +1,9 @@
 import type { ItemRecord } from '../../lib/types';
 
+/**
+ * ピックアップされた商品名の一覧はここでは描画しない(下の既存グリッド内で該当カードを
+ * ハイライトする方式に統一しているため)。ここでは見出しと件数、スキップ操作のみを担う。
+ */
 export function renderPickupWidget(items: readonly ItemRecord[], onSkip: () => void): HTMLElement {
   const widget = document.createElement('section');
   widget.className = 'be-pickup';
@@ -8,15 +12,11 @@ export function renderPickupWidget(items: readonly ItemRecord[], onSkip: () => v
   heading.textContent = '今日のピックアップ';
   widget.appendChild(heading);
 
-  const list = document.createElement('ul');
-  list.className = 'be-pickup__list';
-  for (const item of items) {
-    const li = document.createElement('li');
-    li.className = 'be-pickup__item';
-    li.textContent = `${item.itemName}(${item.shopName})`;
-    list.appendChild(li);
-  }
-  widget.appendChild(list);
+  const count = document.createElement('p');
+  count.className = 'be-pickup__count';
+  count.textContent =
+    items.length > 0 ? `${items.length}件を下の一覧でハイライトしています。` : '対象の商品がありません。';
+  widget.appendChild(count);
 
   const skipButton = document.createElement('button');
   skipButton.type = 'button';

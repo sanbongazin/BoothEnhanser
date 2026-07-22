@@ -12,6 +12,7 @@ function makeRawResponse(overrides: Partial<Record<string, unknown>> = {}) {
         category: { name: { ja: '3Dキャラクター', en: '3D Characters' } },
         shop: { name: 'テストショップ', url: 'https://testshop.booth.pm/' },
         url: 'https://booth.pm/ja/items/1234567',
+        thumbnail_image_urls: ['https://booth.pximg.net/example/thumb.jpg'],
         tracking_data: { product_price: 3000 },
       },
     ],
@@ -27,7 +28,7 @@ function makeRawResponse(overrides: Partial<Record<string, unknown>> = {}) {
 
 describe('wishListPageUrl', () => {
   it('builds a page query URL', () => {
-    expect(wishListPageUrl(3)).toBe('https://accounts.booth.pm/wish_lists.json?page=3');
+    expect(wishListPageUrl(3)).toBe('https://accounts.booth.pm/wish_list_name_items.json?page=3');
   });
 });
 
@@ -45,6 +46,7 @@ describe('parseWishListApiResponse', () => {
         isAdult: false,
         category: '3Dキャラクター',
         url: 'https://booth.pm/ja/items/1234567',
+        thumbnailUrl: 'https://booth.pximg.net/example/thumb.jpg',
       },
     ]);
     expect(result.pagination).toEqual({

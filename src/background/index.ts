@@ -49,6 +49,11 @@ browser.runtime.onMessage.addListener((message: unknown): Promise<ExtensionRespo
       });
     case 'PRUNE_REMOVED_FAVORITES':
       return pruneRemovedFavorites(request.currentItemIds).then(() => undefined);
+    case 'FETCH_HTML_REQUESTED':
+      return fetch(request.url, { credentials: 'include' })
+        .then((res) => (res.ok ? res.text() : null))
+        .then((html) => ({ html }))
+        .catch(() => ({ html: null }));
     default:
       return undefined;
   }

@@ -30,3 +30,12 @@ export async function setItemTypeOverride(itemId: string, override: ItemType): P
 export async function pruneRemovedFavorites(currentItemIds: string[]): Promise<void> {
   await send({ type: 'PRUNE_REMOVED_FAVORITES', currentItemIds });
 }
+
+/**
+ * content scriptからは他オリジンへのfetch()がCORSで失敗するため、background側(拡張機能ページ、
+ * host_permissionsによりCORSの制約を受けない)に取得を依頼し、HTML文字列を受け取る。
+ */
+export async function fetchHtml(url: string): Promise<string | null> {
+  const res = await send({ type: 'FETCH_HTML_REQUESTED', url });
+  return res?.html ?? null;
+}

@@ -16,8 +16,10 @@ export const SELECTORS = {
   adultBadge: '.item-card__badge--r18', // TODO(verify-against-live-booth): 商品詳細ページ側は未確認
   // TODO(verify-against-live-booth): 好きリストのページネーションはリンクのhrefではなく
   // JS駆動のクリックハンドラ(<div>)であり、rel="next"のようなアンカーは存在しないことを確認済み。
-  // https://accounts.booth.pm/wish_lists.json というJSON APIの存在を確認しているが、
-  // レスポンス形式(ページングパラメータ含む)は未検証。このセレクタは現状機能しない。
+  // 実セッションで確認済み(2026-07-22): 好きリストの取得は現在
+  // `wish_list_name_items.json?page=N` (lib/wishListApi.ts) 経由で行っており、
+  // このDOMフォールバック一式(extractor.ts)はcontent/index.tsから呼ばれていない未使用コード。
+  // このセレクタは現状機能しない。
   nextPageLink: '.pagination a[rel="next"]',
 } as const;
 

@@ -1,7 +1,7 @@
 import type { ItemRecord, ItemType } from './types';
 import { AVATAR_KEYWORDS, NON_AVATAR_KEYWORDS } from './keywordDictionary';
 
-// 実セッションで確認済み(2026-07-21): wish_lists.json APIのcategory.name.jaに入る
+// 実セッションで確認済み(2026-07-22): wish_list_name_items.json APIのcategory.name.jaに入る
 // 実際の値。「3Dキャラクター」がアバター本体、それ以外(衣装・髪型・装飾品・小道具・
 // 環境/ワールド・テクスチャ・ツール・その他モデル等)はアバター以外として扱う。
 // ここに無い未知のカテゴリはキーワード辞書によるフォールバックへ回る。

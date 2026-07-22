@@ -1,14 +1,16 @@
 // accounts.booth.pm の好きリストJSON APIを解析するモジュール。
-// 実セッションで確認済み(2026-07-21): https://accounts.booth.pm/wish_lists.json は
-// Rails(kaminari想定)スタイルのページネーションを持つJSONを返し、各アイテムに
-// is_adult・category.name.ja・tracking_data.product_price が直接含まれるため、
-// 好きリスト一覧ページのDOM解析(価格テキスト・R18バッジ・カテゴリセレクタ)より
-// 優先して使う。ページングのクエリパラメータ名(`page`)はレスポンスの
-// current_page/next_page構造から妥当と判断したが、実リクエストURLでの最終確認は未了。
-export const WISH_LISTS_JSON_URL = 'https://accounts.booth.pm/wish_lists.json';
+// 実セッションで確認済み(2026-07-22): 好きリストページ(https://accounts.booth.pm/wish_lists)は
+// 表示時に `wish_list_name_items.json?page=N` をXHRで呼び、全フォルダ横断の一覧を
+// {items: [...], pagination: {current_page, prev_page, next_page, limit_value, total_pages,
+// total_count}} という形で返す。特別なリクエストヘッダーは不要(素のfetch+credentials:'include'
+// で同じ形状が返ることを確認済み)。似た名前の `wish_lists.json` は別物で、パラメータなしだと
+// {item_ids: [], wishlists_counts: {}} という無関係の形状を返すため使わないこと。
+// 実データ(112件)で items[].shop / items[].category / items[].tracking_data が
+// 常に存在することを確認済み。
+export const WISH_LIST_ITEMS_JSON_URL = 'https://accounts.booth.pm/wish_list_name_items.json';
 
 export function wishListPageUrl(page: number): string {
-  return `${WISH_LISTS_JSON_URL}?page=${page}`;
+  return `${WISH_LIST_ITEMS_JSON_URL}?page=${page}`;
 }
 
 export interface WishListApiItem {
@@ -20,6 +22,7 @@ export interface WishListApiItem {
   isAdult: boolean;
   category: string | null;
   url: string;
+  thumbnailUrl: string;
 }
 
 export interface WishListApiPagination {
@@ -42,6 +45,7 @@ interface RawWishListItem {
   category: { name?: { ja?: string } } | null;
   shop: { name?: string; url?: string } | null;
   url: string;
+  thumbnail_image_urls?: string[];
   tracking_data?: { product_price?: number };
 }
 
@@ -80,14 +84,15 @@ function parseItem(raw: RawWishListItem): WishListApiItem {
     isAdult: raw.is_adult,
     category: raw.category?.name?.ja ?? null,
     url: raw.url,
+    thumbnailUrl: raw.thumbnail_image_urls?.[0] ?? '',
   };
 }
 
-/** wish_lists.json のレスポンスをパースする。想定と異なる形式の場合は例外を投げる。 */
+/** wish_list_name_items.json のレスポンスをパースする。想定と異なる形式の場合は例外を投げる。 */
 export function parseWishListApiResponse(json: unknown): WishListApiPage {
   const data = json as Partial<RawWishListResponse>;
   if (!Array.isArray(data.items) || !data.pagination) {
-    throw new Error('unexpected wish_lists.json response shape');
+    throw new Error('unexpected wish_list_name_items.json response shape');
   }
 
   return {
