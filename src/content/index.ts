@@ -20,8 +20,9 @@ import {
 import { filterByTab, renderTabBar } from './ui/tabs';
 import { renderSortControl } from './ui/sortControl';
 import { renderViewModeControl } from './ui/viewModeControl';
-import { renderPickupWidget } from './ui/pickupWidget';
+import { renderSearchControl } from './ui/searchControl';
 import { renderItemGrid, updateItemAvatarTagsInPlace } from './ui/itemGrid';
+import { filterBySearchQuery } from '../lib/search';
 import type { ExtensionRequest } from '../messages';
 
 // 収集は「閲覧」の範囲に留める(自動操作はしない)ため、JSON APIページ取得の間隔を空ける
@@ -146,14 +147,14 @@ interface State {
   tab: TabKey;
   sort: SortMode;
   viewMode: ViewMode;
-  reshuffleNonce: number;
+  searchQuery: string;
 }
 
 const state: State = {
-  tab: 'avatar',
+  tab: 'non-avatar-all-ages',
   sort: 'registered-new',
   viewMode: 'card',
-  reshuffleNonce: 0,
+  searchQuery: '',
 };
 
 interface NativeWishListRefs {
@@ -264,10 +265,37 @@ async function handleOverride(itemId: string, override: ItemType): Promise<void>
   await render();
 }
 
+/**
+ * 検索欄にフォーカス中に再描画すると入力位置が失われるため、render()の前後でフォーカス/
+ * カーソル位置を保存・復元する。searchControl.ts側はIME変換中・入力の間引き(debounce)を
+ * 行っているが、debounce後に発火するrender()自体はフォーカスを保持しないため、ここで補う。
+ */
+function captureSearchInputFocus(): { selectionStart: number | null; selectionEnd: number | null } | null {
+  const active = document.activeElement;
+  if (!(active instanceof HTMLInputElement) || !active.classList.contains('be-search__input')) {
+    return null;
+  }
+  return { selectionStart: active.selectionStart, selectionEnd: active.selectionEnd };
+}
+
+function restoreSearchInputFocus(
+  root: HTMLElement,
+  saved: { selectionStart: number | null; selectionEnd: number | null } | null,
+): void {
+  if (!saved) return;
+  const input = root.querySelector<HTMLInputElement>('.be-search__input');
+  if (!input) return;
+  input.focus();
+  if (saved.selectionStart !== null && saved.selectionEnd !== null) {
+    input.setSelectionRange(saved.selectionStart, saved.selectionEnd);
+  }
+}
+
 async function render(): Promise<void> {
   const refs = findNativeWishListRefs();
 
   const root = mountRoot(refs);
+  const savedSearchFocus = captureSearchInputFocus();
   root.innerHTML = '';
   root.appendChild(renderTabBar(state.tab, (tab) => void ((state.tab = tab), render())));
   hideNativeGrid(refs);
@@ -276,30 +304,42 @@ async function render(): Promise<void> {
 
   const controls = document.createElement('div');
   controls.className = 'be-controls';
-  controls.appendChild(renderSortControl(state.sort, (sort) => void ((state.sort = sort), render())));
   controls.appendChild(
+    renderSearchControl(state.searchQuery, (query) => void ((state.searchQuery = query), render())),
+  );
+
+  const rightControls = document.createElement('div');
+  rightControls.className = 'be-controls__right';
+  rightControls.appendChild(
     renderViewModeControl(state.viewMode, (viewMode) => void ((state.viewMode = viewMode), render())),
   );
+  rightControls.appendChild(
+    renderSortControl(state.sort, (sort) => void ((state.sort = sort), render())),
+  );
+  controls.appendChild(rightControls);
   root.appendChild(controls);
 
-  const pickupItems = selectPickupItems(allItems, {
-    forceReshuffle: state.reshuffleNonce || undefined,
-  });
-  root.appendChild(
-    renderPickupWidget(pickupItems, () => {
-      state.reshuffleNonce += 1;
-      void render();
-    }),
-  );
+  const pickupItems = selectPickupItems(allItems);
   const pickedUpItemIds = new Set(pickupItems.map((item) => item.itemId));
 
   const tabItems = filterByTab(allItems, state.tab);
-  const sorted = sortItems(tabItems, state.sort);
-  root.appendChild(
-    renderItemGrid(sorted, state.tab, state.viewMode, pickedUpItemIds, (itemId, override) =>
-      void handleOverride(itemId, override),
-    ),
-  );
+  const searched = filterBySearchQuery(tabItems, state.searchQuery);
+  const sorted = sortItems(searched, state.sort);
+
+  if (state.searchQuery.trim() && sorted.length === 0) {
+    const empty = document.createElement('p');
+    empty.className = 'be-search__empty';
+    empty.textContent = '一致する商品が見つかりませんでした。';
+    root.appendChild(empty);
+  } else {
+    root.appendChild(
+      renderItemGrid(sorted, state.tab, state.viewMode, pickedUpItemIds, (itemId, override) =>
+        void handleOverride(itemId, override),
+      ),
+    );
+  }
+
+  restoreSearchInputFocus(root, savedSearchFocus);
 }
 
 browser.runtime.onMessage.addListener((message: unknown) => {

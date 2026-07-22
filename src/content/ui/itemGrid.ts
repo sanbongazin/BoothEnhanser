@@ -56,6 +56,14 @@ function renderAvatarTagsArea(item: ItemRecord, maxVisible: number): HTMLElement
   return wrap;
 }
 
+/** 「今日のピックアップ」対象カードに付ける吹き出しバッジ。専有スペースの大きいバー表示の代わり。 */
+function renderPickupBubble(): HTMLElement {
+  const bubble = document.createElement('span');
+  bubble.className = 'be-pickup-bubble';
+  bubble.textContent = 'ピックアップ!';
+  return bubble;
+}
+
 function renderOverrideControls(item: ItemRecord, onOverride: OverrideHandler): HTMLElement {
   const wrap = document.createElement('div');
   wrap.className = 'be-override';
@@ -112,6 +120,10 @@ function renderCard(
     badge.className = 'be-card__badge';
     badge.textContent = 'R-18';
     thumbWrap.appendChild(badge);
+  }
+
+  if (isPickedUp) {
+    thumbWrap.appendChild(renderPickupBubble());
   }
 
   // 対応アバターのタグはサムネイル上にオーバーレイ表示する(カードの高さを揃えるため)
@@ -172,6 +184,10 @@ function renderListRow(
     badge.className = 'be-row__badge';
     badge.textContent = 'R-18';
     row.appendChild(badge);
+  }
+
+  if (isPickedUp) {
+    row.appendChild(renderPickupBubble());
   }
 
   const avatarTagsArea = renderAvatarTagsArea(item, MAX_VISIBLE_AVATAR_TAGS_LIST);

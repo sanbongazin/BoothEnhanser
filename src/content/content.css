@@ -49,9 +49,75 @@
 
 .be-controls {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 12px;
   margin-bottom: 12px;
+}
+
+.be-controls__right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-left: auto;
+}
+
+.be-search {
+  position: relative;
+  flex: 0 1 50%;
+  min-width: 160px;
+}
+
+/*
+ * 実セッションで確認済み(2026-07-22): BOOTH側のグローバルCSSにinput要素向けの
+ * 詳細度の高いルール(border/padding/font-size/height等)があり、`.be-search__input`
+ * (詳細度0,1,0)だけでは負けて上書きされてしまう。全プロパティに!importantを付けて
+ * 確実にこちらの指定を勝たせる。
+ */
+.be-search__input {
+  display: block !important;
+  width: 100% !important;
+  height: 36px !important;
+  margin: 0 !important;
+  padding: 0 28px 0 10px !important;
+  border: none !important;
+  border-radius: 4px !important;
+  background: var(--be-tab-bg-inactive) !important;
+  color: var(--be-text) !important;
+  font-family: inherit !important;
+  font-size: 14px !important;
+  box-sizing: border-box !important;
+}
+
+.be-search__input::placeholder {
+  color: var(--be-text-muted);
+}
+
+.be-search__clear {
+  position: absolute;
+  top: 50%;
+  right: 4px;
+  width: 18px;
+  height: 18px;
+  transform: translateY(-50%);
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--be-text-muted);
+  font-size: 13px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.be-search__clear:hover {
+  background: var(--be-border);
+}
+
+.be-search__empty {
+  padding: 24px 0;
+  color: var(--be-text-muted);
+  font-size: 13px;
+  text-align: center;
 }
 
 .be-sort-control {
@@ -69,49 +135,22 @@
 }
 
 .be-view-toggle__button {
-  padding: 4px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
   border: none;
   border-radius: 4px;
   background: var(--be-tab-bg-inactive);
   color: var(--be-text-tab-inactive);
-  font-family: inherit;
-  font-size: 14px;
   cursor: pointer;
 }
 
 .be-view-toggle__button--active {
   background: var(--be-tab-bg-active);
   color: #fff;
-}
-
-.be-pickup {
-  margin-bottom: 16px;
-  padding: 12px;
-  background: var(--be-tab-bg-inactive);
-  border-radius: 4px;
-}
-
-.be-pickup h3 {
-  margin: 0;
-  font-size: 20px;
-  font-weight: 600;
-  color: var(--be-text);
-}
-
-.be-pickup__count {
-  margin: 4px 0;
-  color: var(--be-text-muted);
-  font-size: 13px;
-}
-
-.be-pickup__skip {
-  padding: 4px 16px;
-  border: none;
-  border-radius: 2px;
-  background: var(--be-accent);
-  color: #fff;
-  font-family: inherit;
-  cursor: pointer;
 }
 
 .be-grid {
@@ -190,6 +229,44 @@
   color: #fff;
   background: var(--be-text);
   border-radius: 2px;
+}
+
+/* 「今日のピックアップ」バッジ。専有スペースの大きい案内バーの代わりに、対象カードへ
+   吹き出し(下向きの小さな三角形の尾を付けた角丸ラベル)として直接付与する。 */
+.be-pickup-bubble {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  padding: 2px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #fff;
+  background: var(--be-accent);
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.be-pickup-bubble::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: -4px;
+  width: 0;
+  height: 0;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 5px solid var(--be-accent);
+  transform: translateX(-50%);
+}
+
+/* リスト表示では絶対配置(サムネイル前提)ではなく、他のバッジ同様インラインで並べる */
+.be-row .be-pickup-bubble {
+  position: static;
+  display: inline-block;
+}
+
+.be-row .be-pickup-bubble::after {
+  display: none;
 }
 
 .be-list {
