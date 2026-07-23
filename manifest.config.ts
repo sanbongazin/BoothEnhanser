@@ -30,7 +30,7 @@ export function createManifest(target: BuildTarget) {
     description: pkg.description,
     version: pkg.version,
     icons: ICONS,
-    permissions: ['storage', 'alarms'],
+    permissions: ['alarms'],
     host_permissions: BOOTH_HOST_MATCH,
     background:
       target === 'firefox'

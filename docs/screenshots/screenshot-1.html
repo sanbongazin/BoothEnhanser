@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1280">
+<title>BoothEnhanser - Screenshot</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  width: 1280px;
+  height: 800px;
+  overflow: hidden;
+  background: #fff;
+  font-family: -apple-system, 'system-ui', 'Hiragino Kaku Gothic ProN', Meiryo, sans-serif;
+}
+
+/* ---- BOOTH-like page shell ---- */
+.page-header {
+  background: #252f3d;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  gap: 16px;
+}
+.page-header__logo {
+  display: flex; align-items: center; gap: 8px;
+}
+.page-header__wordmark { color: #fff; font-size: 18px; font-weight: 700; letter-spacing: .02em; }
+.page-header__nav { display: flex; gap: 24px; margin-left: 32px; }
+.page-header__nav a { color: rgba(255,255,255,.75); font-size: 13px; text-decoration: none; }
+.page-header__actions { margin-left: auto; display: flex; gap: 12px; align-items: center; }
+.page-header__btn {
+  padding: 6px 16px; border-radius: 4px; font-size: 13px; border: none; cursor: pointer;
+  background: #fc4d50; color: #fff;
+}
+
+.page-body { display: flex; height: calc(800px - 56px); }
+.sidebar {
+  width: 200px; flex-shrink: 0;
+  border-right: 1px solid rgba(0,0,0,.08);
+  padding: 20px 16px;
+  background: #fafafa;
+}
+.sidebar__title { font-size: 12px; color: #666; margin-bottom: 12px; font-weight: 600; letter-spacing: .04em; }
+.sidebar__item { padding: 6px 8px; font-size: 13px; color: #252f3d; border-radius: 4px; margin-bottom: 2px; cursor: pointer; }
+.sidebar__item--active { background: rgba(37,47,61,.08); font-weight: 600; }
+
+.main { flex: 1; overflow-y: auto; padding: 20px 24px; }
+.main__title { font-size: 20px; font-weight: 700; color: #252f3d; margin-bottom: 4px; }
+.main__sub { font-size: 13px; color: #666; margin-bottom: 0; }
+
+/* ---- Extension UI ---- */
+:root {
+  --be-font: -apple-system,'system-ui','Hiragino Kaku Gothic ProN',Meiryo,sans-serif;
+  --be-text: #252f3d;
+  --be-text-muted: #666;
+  --be-text-tab-inactive: #474747;
+  --be-link: #1b7f8c;
+  --be-accent: #fc4d50;
+  --be-tab-bg-active: #252f3d;
+  --be-tab-bg-inactive: rgba(0,0,0,.04);
+  --be-border: rgba(0,0,0,.08);
+  --be-brand-accent: #4f6fd6;
+}
+.be-root { margin:16px 0; padding-top:16px; border-top:1px solid var(--be-border); font-family:var(--be-font); font-size:14px; color:var(--be-text); }
+.be-badge { display:inline-flex;align-items:center;gap:5px;background:#eef2fc;color:#4f6fd6;font-size:11px;font-weight:600;padding:2px 8px 2px 6px;border-radius:999px;margin-bottom:10px; }
+.be-badge svg { flex-shrink:0; }
+.be-tabs { display:flex; gap:8px; margin-bottom:12px; }
+.be-tab { padding:4px 24px; border:none; border-radius:4px; background:var(--be-tab-bg-inactive); color:var(--be-text-tab-inactive); font-family:inherit; font-size:16px; cursor:pointer; }
+.be-tab--active { background:var(--be-tab-bg-active); color:#fff; }
+.be-controls { display:flex; flex-wrap:wrap; align-items:center; gap:12px; margin-bottom:12px; }
+.be-controls__right { display:flex; align-items:center; gap:12px; margin-left:auto; }
+.be-search { position:relative; flex:0 1 50%; min-width:160px; }
+.be-search__input { display:block;width:100%;height:36px;padding:0 28px 0 10px;border:none;border-radius:4px;background:var(--be-tab-bg-inactive);color:var(--be-text);font-family:inherit;font-size:14px;box-sizing:border-box; }
+.be-search__input::placeholder { color:var(--be-text-muted); }
+.be-search__icon { position:absolute;top:50%;right:8px;transform:translateY(-50%);pointer-events:none; }
+.be-sort-control { font-family:inherit;border:none;border-radius:4px;background:var(--be-tab-bg-inactive);color:var(--be-text-tab-inactive);padding:4px 8px;font-size:14px; }
+.be-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); gap:16px 24px; }
+.be-card { position:relative; display:flex; flex-direction:column; gap:4px; }
+.be-card--pickup { outline:2px solid var(--be-brand-accent); outline-offset:4px; }
+.be-card__link { display:flex; flex-direction:column; gap:6px; color:inherit; text-decoration:none; }
+.be-card__thumb-wrap { position:relative; }
+.be-card__thumb { width:100%; aspect-ratio:1/1; object-fit:contain; background:#f5f5f5; display:block; border-radius:4px; }
+.be-card__name { font-size:13px; line-height:1.4; color:var(--be-text); display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+.be-card__meta { display:flex; justify-content:space-between; align-items:baseline; font-size:12px; }
+.be-card__shop { color:var(--be-link); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.be-card__price { color:var(--be-text-muted); flex-shrink:0; }
+.be-pickup-bubble { position:absolute;top:4px;right:4px;padding:2px 8px;font-size:11px;font-weight:600;color:#fff;background:var(--be-brand-accent);border-radius:999px;white-space:nowrap; }
+.be-avatar-tags-area { position:absolute;left:0;right:0;bottom:0;display:flex;flex-wrap:wrap;align-items:center;gap:4px;padding:12px 4px 4px;background:linear-gradient(to top,rgba(0,0,0,.6),rgba(0,0,0,0)); }
+.be-avatar-tag { padding:1px 6px;font-size:11px;color:#fff;background:rgba(255,255,255,.2);border-radius:999px;white-space:nowrap; backdrop-filter:blur(2px); }
+</style>
+</head>
+<body>
+<header class="page-header">
+  <div class="page-header__logo">
+    <svg width="28" height="28" viewBox="0 0 56 56"><rect x="4" y="4" width="48" height="48" rx="10" fill="#fff" opacity=".15"/><text x="14" y="38" font-size="30" fill="#fff">B</text></svg>
+    <span class="page-header__wordmark">BOOTH</span>
+  </div>
+  <nav class="page-header__nav">
+    <a href="#">商品を探す</a>
+    <a href="#">マーケット</a>
+    <a href="#">ライブラリ</a>
+  </nav>
+  <div class="page-header__actions">
+    <button class="page-header__btn">ショップを開く</button>
+  </div>
+</header>
+
+<div class="page-body">
+  <aside class="sidebar">
+    <div class="sidebar__title">マイページ</div>
+    <div class="sidebar__item sidebar__item--active">スキした商品</div>
+    <div class="sidebar__item">購入履歴</div>
+    <div class="sidebar__item">フォロー中</div>
+    <div class="sidebar__item">ダウンロード</div>
+  </aside>
+
+  <main class="main">
+    <h1 class="main__title">スキした商品</h1>
+    <p class="main__sub">112件</p>
+
+    <!-- Extension UI -->
+    <div class="be-root">
+      <div class="be-badge">
+        <svg width="12" height="12" viewBox="0 0 56 56"><rect x="4" y="4" width="48" height="48" rx="14" fill="#4f6fd6"/><circle cx="18" cy="18" r="4" fill="#fff"/><polyline points="18,30 25,37 38,20" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        BoothEnhanser
+      </div>
+      <nav class="be-tabs">
+        <button class="be-tab">すべて</button>
+        <button class="be-tab be-tab--active">アバター以外(全年齢)</button>
+        <button class="be-tab">アバター以外(R-18)</button>
+        <button class="be-tab">アバター</button>
+        <button class="be-tab">その他</button>
+      </nav>
+      <div class="be-controls">
+        <div class="be-search">
+          <input class="be-search__input" placeholder="商品名・ショップ名・対応アバターで検索" readonly>
+          <svg class="be-search__icon" width="13" height="13" viewBox="0 0 24 24"><circle cx="10" cy="10" r="7" fill="none" stroke="#4f6fd6" stroke-width="2.5"/><line x1="15" y1="15" x2="21" y2="21" stroke="#4f6fd6" stroke-width="2.5" stroke-linecap="round"/></svg>
+        </div>
+        <div class="be-controls__right">
+          <select class="be-sort-control">
+            <option selected>登録日が新しい順</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="be-grid">
+        <!-- Card 1 - Pickup -->
+        <div class="be-card be-card--pickup">
+          <a class="be-card__link">
+            <div class="be-card__thumb-wrap">
+              <div class="be-card__thumb" style="background:linear-gradient(135deg,#e8d5f5,#c4a8e8);"></div>
+              <span class="be-pickup-bubble">ピックアップ!</span>
+              <div class="be-avatar-tags-area">
+                <span class="be-avatar-tag">マヌカ</span>
+                <span class="be-avatar-tag">しなの</span>
+              </div>
+            </div>
+            <span class="be-card__name">【マヌカ・しなの対応】春フリル衣装セット</span>
+          </a>
+          <div class="be-card__meta">
+            <span class="be-card__shop">HanaDress</span>
+            <span class="be-card__price">¥2,800</span>
+          </div>
+        </div>
+        <!-- Card 2 -->
+        <div class="be-card">
+          <a class="be-card__link">
+            <div class="be-card__thumb-wrap">
+              <div class="be-card__thumb" style="background:linear-gradient(135deg,#d5e8f5,#a8c8e8);"></div>
+              <div class="be-avatar-tags-area">
+                <span class="be-avatar-tag">カリン</span>
+              </div>
+            </div>
+            <span class="be-card__name">カリン用 ゴシックロリータドレス</span>
+          </a>
+          <div class="be-card__meta">
+            <span class="be-card__shop">MirrorStudio</span>
+            <span class="be-card__price">¥3,500</span>
+          </div>
+        </div>
+        <!-- Card 3 -->
+        <div class="be-card">
+          <a class="be-card__link">
+            <div class="be-card__thumb-wrap">
+              <div class="be-card__thumb" style="background:linear-gradient(135deg,#f5e8d5,#e8c8a8);"></div>
+              <div class="be-avatar-tags-area">
+                <span class="be-avatar-tag">セレスティア</span>
+                <span class="be-avatar-tag">+2</span>
+              </div>
+            </div>
+            <span class="be-card__name">ファンタジーアーマーセット Full Pack</span>
+          </a>
+          <div class="be-card__meta">
+            <span class="be-card__shop">IronCraft</span>
+            <span class="be-card__price">¥4,200</span>
+          </div>
+        </div>
+        <!-- Card 4 -->
+        <div class="be-card">
+          <a class="be-card__link">
+            <div class="be-card__thumb-wrap">
+              <div class="be-card__thumb" style="background:linear-gradient(135deg,#f5d5d5,#e8a8a8);"></div>
+            </div>
+            <span class="be-card__name">汎用イヤリング・ネックレスセット 20種</span>
+          </a>
+          <div class="be-card__meta">
+            <span class="be-card__shop">AccessoryLab</span>
+            <span class="be-card__price">¥980</span>
+          </div>
+        </div>
+        <!-- Card 5 -->
+        <div class="be-card">
+          <a class="be-card__link">
+            <div class="be-card__thumb-wrap">
+              <div class="be-card__thumb" style="background:linear-gradient(135deg,#d5f5e8,#a8e8c8);"></div>
+              <div class="be-avatar-tags-area">
+                <span class="be-avatar-tag">ルルネ</span>
+              </div>
+            </div>
+            <span class="be-card__name">ルルネ対応 魔法少女コスチューム</span>
+          </a>
+          <div class="be-card__meta">
+            <span class="be-card__shop">StarryCraft</span>
+            <span class="be-card__price">¥1,500</span>
+          </div>
+        </div>
+        <!-- Card 6 -->
+        <div class="be-card">
+          <a class="be-card__link">
+            <div class="be-card__thumb-wrap">
+              <div class="be-card__thumb" style="background:linear-gradient(135deg,#f5f5d5,#e8e8a8);"></div>
+              <div class="be-avatar-tags-area">
+                <span class="be-avatar-tag">仙猫</span>
+                <span class="be-avatar-tag">狛乃</span>
+              </div>
+            </div>
+            <span class="be-card__name">和風浴衣セット 夏祭りver.</span>
+          </a>
+          <div class="be-card__meta">
+            <span class="be-card__shop">WaFuDesign</span>
+            <span class="be-card__price">¥2,200</span>
+          </div>
+        </div>
+        <!-- Card 7 -->
+        <div class="be-card">
+          <a class="be-card__link">
+            <div class="be-card__thumb-wrap">
+              <div class="be-card__thumb" style="background:linear-gradient(135deg,#e0d5f5,#bca8e8);"></div>
+            </div>
+            <span class="be-card__name">フィジカルシェーダー テクスチャパック v3</span>
+          </a>
+          <div class="be-card__meta">
+            <span class="be-card__shop">ShaderWorks</span>
+            <span class="be-card__price">¥500</span>
+          </div>
+        </div>
+        <!-- Card 8 -->
+        <div class="be-card">
+          <a class="be-card__link">
+            <div class="be-card__thumb-wrap">
+              <div class="be-card__thumb" style="background:linear-gradient(135deg,#d5f5f5,#a8e0e8);"></div>
+              <div class="be-avatar-tags-area">
+                <span class="be-avatar-tag">輝夜月</span>
+              </div>
+            </div>
+            <span class="be-card__name">輝夜月対応 サマードレス</span>
+          </a>
+          <div class="be-card__meta">
+            <span class="be-card__shop">MoonLight</span>
+            <span class="be-card__price">¥3,000</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+</body>
+</html>

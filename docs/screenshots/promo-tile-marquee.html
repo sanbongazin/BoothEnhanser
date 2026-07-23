@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>BoothEnhanser - Marquee Promo Tile 1400x560</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  width: 1400px;
+  height: 560px;
+  overflow: hidden;
+  background: #1a2233;
+  font-family: -apple-system, 'Hiragino Kaku Gothic ProN', Meiryo, sans-serif;
+}
+
+.tile {
+  width: 1400px;
+  height: 560px;
+  background: linear-gradient(135deg, #1a2233 0%, #252f3d 50%, #1e2a3a 100%);
+  display: flex;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+}
+
+/* decorative circles */
+.deco {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+}
+.deco-1 { width:600px;height:600px;background:radial-gradient(circle,rgba(79,111,214,.15) 0%,transparent 65%);top:-200px;left:-100px; }
+.deco-2 { width:400px;height:400px;background:radial-gradient(circle,rgba(79,111,214,.12) 0%,transparent 65%);bottom:-150px;left:300px; }
+.deco-3 { width:500px;height:500px;background:radial-gradient(circle,rgba(252,77,80,.07) 0%,transparent 65%);top:-100px;right:200px; }
+
+/* left: copy */
+.left {
+  flex: 0 0 480px;
+  padding: 0 0 0 80px;
+  z-index: 1;
+}
+
+.logo-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.wordmark {
+  font-size: 36px;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -.01em;
+}
+
+.tagline {
+  font-size: 26px;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.45;
+  margin-bottom: 12px;
+}
+
+.sub {
+  font-size: 15px;
+  color: rgba(255,255,255,.6);
+  line-height: 1.7;
+  margin-bottom: 32px;
+}
+
+.features {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 36px;
+}
+
+.feature-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  color: rgba(255,255,255,.85);
+}
+
+.feature-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: #4f6fd6;
+  flex-shrink: 0;
+}
+
+.unofficial {
+  font-size: 11px;
+  color: rgba(255,255,255,.3);
+  letter-spacing: .03em;
+}
+
+/* right: UI preview cards */
+.right {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 60px 32px 40px;
+  z-index: 1;
+}
+
+.ui-preview {
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 24px 80px rgba(0,0,0,.5), 0 4px 16px rgba(0,0,0,.3);
+  width: 100%;
+  max-width: 720px;
+  padding: 20px;
+}
+
+:root {
+  --be-text: #252f3d;
+  --be-text-muted: #666;
+  --be-text-tab-inactive: #474747;
+  --be-link: #1b7f8c;
+  --be-tab-bg-active: #252f3d;
+  --be-tab-bg-inactive: rgba(0,0,0,.04);
+  --be-border: rgba(0,0,0,.08);
+  --be-brand-accent: #4f6fd6;
+}
+
+.be-tabs { display:flex; gap:6px; margin-bottom:10px; }
+.be-tab { padding:3px 16px; border:none; border-radius:4px; background:var(--be-tab-bg-inactive); color:var(--be-text-tab-inactive); font-family:inherit; font-size:13px; cursor:pointer; }
+.be-tab--active { background:var(--be-tab-bg-active); color:#fff; }
+
+.be-controls { display:flex; align-items:center; gap:10px; margin-bottom:12px; }
+.be-search-mock { flex:1; height:30px; border-radius:4px; background:var(--be-tab-bg-inactive); display:flex; align-items:center; padding:0 10px; font-size:12px; color:var(--be-text-muted); gap:6px; }
+.be-sort-mock { height:30px; border-radius:4px; background:var(--be-tab-bg-inactive); display:flex; align-items:center; padding:0 10px; font-size:12px; color:var(--be-text-tab-inactive); white-space:nowrap; }
+
+.be-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:10px 14px; }
+.be-card { display:flex; flex-direction:column; gap:4px; }
+.be-card--pickup { outline:2px solid var(--be-brand-accent); outline-offset:3px; border-radius:2px; }
+.thumb { width:100%; aspect-ratio:1/1; border-radius:4px; position:relative; overflow:hidden; }
+.tag-overlay { position:absolute; bottom:0; left:0; right:0; padding:8px 3px 3px; background:linear-gradient(to top,rgba(0,0,0,.6),transparent); display:flex; gap:3px; flex-wrap:wrap; }
+.tag { padding:1px 5px; font-size:9px; color:#fff; background:rgba(255,255,255,.2); border-radius:999px; backdrop-filter:blur(2px); white-space:nowrap; }
+.pickup-badge { position:absolute;top:3px;right:3px;padding:1px 6px;font-size:9px;font-weight:600;color:#fff;background:var(--be-brand-accent);border-radius:999px; }
+.card-name { font-size:10px; line-height:1.4; color:var(--be-text); display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+.card-meta { display:flex; justify-content:space-between; font-size:9px; }
+.card-shop { color:var(--be-link); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.card-price { color:var(--be-text-muted); flex-shrink:0; }
+</style>
+</head>
+<body>
+<div class="tile">
+  <div class="deco deco-1"></div>
+  <div class="deco deco-2"></div>
+  <div class="deco deco-3"></div>
+
+  <div class="left">
+    <div class="logo-row">
+      <svg width="44" height="44" viewBox="0 0 56 56">
+        <rect x="4" y="4" width="48" height="48" rx="14" fill="#4f6fd6"/>
+        <circle cx="18" cy="18" r="4" fill="#fff"/>
+        <polyline points="18,30 25,37 38,20" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span class="wordmark">BoothEnhanser</span>
+    </div>
+
+    <p class="tagline">好きリストを、<br>整えて選ぶ。</p>
+    <p class="sub">BOOTHの好きリストをカテゴリ分類・<br>並び替え・検索で快適に整理できます。</p>
+
+    <div class="features">
+      <div class="feature-item"><span class="feature-dot"></span>アバター / 衣装 / アクセサリーを自動分類</div>
+      <div class="feature-item"><span class="feature-dot"></span>価格・登録日・ショップ名など9種の並び替え</div>
+      <div class="feature-item"><span class="feature-dot"></span>対応アバタータグで横断検索</div>
+      <div class="feature-item"><span class="feature-dot"></span>今日のピックアップをランダム表示</div>
+    </div>
+
+    <p class="unofficial">非公式ツール — pixiv株式会社・BOOTHとは無関係</p>
+  </div>
+
+  <div class="right">
+    <div class="ui-preview">
+      <div class="be-tabs">
+        <button class="be-tab">すべて</button>
+        <button class="be-tab be-tab--active">アバター以外(全年齢)</button>
+        <button class="be-tab">アバター以外(R-18)</button>
+        <button class="be-tab">アバター</button>
+      </div>
+      <div class="be-controls">
+        <div class="be-search-mock">
+          <svg width="11" height="11" viewBox="0 0 24 24"><circle cx="10" cy="10" r="7" fill="none" stroke="#4f6fd6" stroke-width="2.5"/><line x1="15" y1="15" x2="21" y2="21" stroke="#4f6fd6" stroke-width="2.5" stroke-linecap="round"/></svg>
+          商品名・ショップ名・対応アバターで検索
+        </div>
+        <div class="be-sort-mock">登録日が新しい順 ▾</div>
+      </div>
+      <div class="be-grid">
+        <!-- 5 cards -->
+        <div class="be-card be-card--pickup">
+          <div class="thumb" style="background:linear-gradient(135deg,#e8d5f5,#c4a8e8)">
+            <span class="pickup-badge">ピックアップ!</span>
+            <div class="tag-overlay"><span class="tag">マヌカ</span><span class="tag">しなの</span></div>
+          </div>
+          <div class="card-name">春フリル衣装セット</div>
+          <div class="card-meta"><span class="card-shop">HanaDress</span><span class="card-price">¥2,800</span></div>
+        </div>
+        <div class="be-card">
+          <div class="thumb" style="background:linear-gradient(135deg,#d5e8f5,#a8c8e8)">
+            <div class="tag-overlay"><span class="tag">カリン</span></div>
+          </div>
+          <div class="card-name">ゴシックロリータドレス</div>
+          <div class="card-meta"><span class="card-shop">MirrorStudio</span><span class="card-price">¥3,500</span></div>
+        </div>
+        <div class="be-card">
+          <div class="thumb" style="background:linear-gradient(135deg,#f5e8d5,#e8c8a8)">
+            <div class="tag-overlay"><span class="tag">セレスティア</span><span class="tag">+2</span></div>
+          </div>
+          <div class="card-name">ファンタジーアーマーセット</div>
+          <div class="card-meta"><span class="card-shop">IronCraft</span><span class="card-price">¥4,200</span></div>
+        </div>
+        <div class="be-card">
+          <div class="thumb" style="background:linear-gradient(135deg,#d5f5e8,#a8e8c8)">
+            <div class="tag-overlay"><span class="tag">ルルネ</span></div>
+          </div>
+          <div class="card-name">魔法少女コスチューム</div>
+          <div class="card-meta"><span class="card-shop">StarryCraft</span><span class="card-price">¥1,500</span></div>
+        </div>
+        <div class="be-card">
+          <div class="thumb" style="background:linear-gradient(135deg,#f5f5d5,#e8e8a8)">
+            <div class="tag-overlay"><span class="tag">仙猫</span><span class="tag">狛乃</span></div>
+          </div>
+          <div class="card-name">和風浴衣セット 夏祭りver.</div>
+          <div class="card-meta"><span class="card-shop">WaFuDesign</span><span class="card-price">¥2,200</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
