@@ -34,8 +34,8 @@ export function createManifest(target: BuildTarget) {
     host_permissions: BOOTH_HOST_MATCH,
     background:
       target === 'firefox'
-        ? { scripts: ['src/background/index.ts'], persistent: false }
-        : { service_worker: 'src/background/index.ts', type: 'module' },
+        ? { scripts: ['src/background/worker.ts'], persistent: false }
+        : { service_worker: 'src/background/worker.ts', type: 'module' },
     content_scripts: [
       {
         matches: [WISH_LIST_MATCH],
