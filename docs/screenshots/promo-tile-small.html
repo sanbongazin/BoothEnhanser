@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>BoothEnhanser - Small Promo Tile 440x280</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  width: 440px;
+  height: 280px;
+  overflow: hidden;
+  background: #252f3d;
+  font-family: -apple-system, 'Hiragino Kaku Gothic ProN', Meiryo, sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tile {
+  width: 440px;
+  height: 280px;
+  background: #252f3d;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  position: relative;
+  overflow: hidden;
+}
+
+/* background decoration */
+.tile::before {
+  content: '';
+  position: absolute;
+  width: 320px;
+  height: 320px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(79,111,214,.18) 0%, transparent 70%);
+  top: -80px;
+  right: -60px;
+}
+.tile::after {
+  content: '';
+  position: absolute;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(79,111,214,.12) 0%, transparent 70%);
+  bottom: -60px;
+  left: -40px;
+}
+
+.logo-wrap {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 20px;
+  z-index: 1;
+}
+
+.wordmark {
+  font-size: 28px;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -.01em;
+}
+
+.tagline {
+  font-size: 15px;
+  color: rgba(255,255,255,.75);
+  text-align: center;
+  line-height: 1.6;
+  margin-bottom: 24px;
+  z-index: 1;
+}
+
+.feature-pills {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+  z-index: 1;
+}
+
+.pill {
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  background: rgba(79,111,214,.25);
+  color: #a8bff5;
+  border: 1px solid rgba(79,111,214,.4);
+}
+
+.unofficial {
+  position: absolute;
+  bottom: 12px;
+  font-size: 10px;
+  color: rgba(255,255,255,.35);
+  z-index: 1;
+  letter-spacing: .02em;
+}
+</style>
+</head>
+<body>
+<div class="tile">
+  <div class="logo-wrap">
+    <svg width="48" height="48" viewBox="0 0 56 56">
+      <rect x="4" y="4" width="48" height="48" rx="14" fill="#4f6fd6"/>
+      <circle cx="18" cy="18" r="4" fill="#fff"/>
+      <polyline points="18,30 25,37 38,20" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <span class="wordmark">BoothEnhanser</span>
+  </div>
+  <p class="tagline">好きリストを、整えて選ぶ。</p>
+  <div class="feature-pills">
+    <span class="pill">自動分類</span>
+    <span class="pill">並び替え</span>
+    <span class="pill">キーワード検索</span>
+    <span class="pill">アバタータグ</span>
+  </div>
+  <span class="unofficial">非公式ツール / Unofficial Extension</span>
+</div>
+</body>
+</html>
