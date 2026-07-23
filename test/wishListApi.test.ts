@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { parseWishListApiResponse, wishListPageUrl } from '../src/lib/wishListApi';
+import fixtureResponse from './fixtures/wish_list_name_items.json';
 
 function makeRawResponse(overrides: Partial<Record<string, unknown>> = {}) {
   return {
@@ -88,5 +89,53 @@ describe('parseWishListApiResponse', () => {
 
   it('throws when the response shape is unexpected', () => {
     expect(() => parseWishListApiResponse({ foo: 'bar' })).toThrow();
+  });
+});
+
+describe('parseWishListApiResponse (fixture)', () => {
+  it('test/fixtures/wish_list_name_items.json の全フィールドを正しくパースする', () => {
+    const result = parseWishListApiResponse(fixtureResponse);
+
+    expect(result.items).toHaveLength(3);
+
+    expect(result.items[0]).toEqual({
+      itemId: '1234567',
+      itemName: 'テストアバター衣装',
+      shopName: 'テストショップ',
+      shopId: 'testshop',
+      price: 3000,
+      isAdult: false,
+      category: '3Dキャラクター',
+      url: 'https://booth.pm/ja/items/1234567',
+      thumbnailUrl: 'https://booth.pximg.net/example/thumb.jpg',
+    });
+  });
+
+  it('is_adult: true のアイテムも正しくマッピングする', () => {
+    const result = parseWishListApiResponse(fixtureResponse);
+    const r18 = result.items.find((item) => item.itemId === '5555555');
+    expect(r18?.isAdult).toBe(true);
+  });
+
+  it('category: null のアイテムは category フィールドが null になる', () => {
+    const result = parseWishListApiResponse(fixtureResponse);
+    const r18 = result.items.find((item) => item.itemId === '5555555');
+    expect(r18?.category).toBeNull();
+  });
+
+  it('thumbnailUrlはthumbnail_image_urlsが空配列のとき空文字になる', () => {
+    const result = parseWishListApiResponse(fixtureResponse);
+    const r18 = result.items.find((item) => item.itemId === '5555555');
+    expect(r18?.thumbnailUrl).toBe('');
+  });
+
+  it('paginationが正しくマッピングされる(next_page, total_pages, total_count)', () => {
+    const result = parseWishListApiResponse(fixtureResponse);
+    expect(result.pagination).toEqual({
+      currentPage: 1,
+      nextPage: 2,
+      totalPages: 5,
+      totalCount: 112,
+    });
   });
 });

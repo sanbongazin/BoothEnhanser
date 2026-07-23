@@ -1,0 +1,45 @@
+{
+  "items": [
+    {
+      "id": 1234567,
+      "name": "テストアバター衣装",
+      "price": "¥ 3,000~",
+      "is_adult": false,
+      "category": { "name": { "ja": "3Dキャラクター", "en": "3D Characters" } },
+      "shop": { "name": "テストショップ", "url": "https://testshop.booth.pm/" },
+      "url": "https://booth.pm/ja/items/1234567",
+      "thumbnail_image_urls": ["https://booth.pximg.net/example/thumb.jpg"],
+      "tracking_data": { "product_price": 3000 }
+    },
+    {
+      "id": 9876543,
+      "name": "無料配布アセット",
+      "price": "¥ 0",
+      "is_adult": false,
+      "category": { "name": { "ja": "3Dモデル（VRChat向け）", "en": "3D Models (VRChat)" } },
+      "shop": { "name": "フリーショップ", "url": "https://freeshop.booth.pm/" },
+      "url": "https://booth.pm/ja/items/9876543",
+      "thumbnail_image_urls": ["https://booth.pximg.net/example/thumb2.jpg"],
+      "tracking_data": { "product_price": 0 }
+    },
+    {
+      "id": 5555555,
+      "name": "R18アイテム",
+      "price": "¥ 1,500~",
+      "is_adult": true,
+      "category": null,
+      "shop": { "name": "R18ショップ", "url": "https://r18shop.booth.pm/" },
+      "url": "https://booth.pm/ja/items/5555555",
+      "thumbnail_image_urls": [],
+      "tracking_data": { "product_price": 1500 }
+    }
+  ],
+  "pagination": {
+    "current_page": 1,
+    "prev_page": null,
+    "next_page": 2,
+    "limit_value": 24,
+    "total_pages": 5,
+    "total_count": 112
+  }
+}
