@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>プライバシーポリシー - BoothEnhanser</title>
+  <style>
+    :root {
+      --text: #1a1a1a;
+      --muted: #555;
+      --border: #ddd;
+      --bg: #fff;
+      --accent: #4a90d9;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Hiragino Sans", "Noto Sans JP", sans-serif;
+      color: var(--text);
+      background: var(--bg);
+      line-height: 1.8;
+      padding: 2rem 1rem;
+    }
+    main {
+      max-width: 720px;
+      margin: 0 auto;
+    }
+    header {
+      border-bottom: 2px solid var(--border);
+      padding-bottom: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    header h1 { font-size: 1.6rem; margin-bottom: 0.4rem; }
+    header p { color: var(--muted); font-size: 0.9rem; }
+    h2 {
+      font-size: 1.1rem;
+      margin: 2rem 0 0.6rem;
+      padding-left: 0.6rem;
+      border-left: 3px solid var(--accent);
+    }
+    p { margin-bottom: 0.8rem; }
+    ul { padding-left: 1.4rem; margin-bottom: 0.8rem; }
+    li { margin-bottom: 0.3rem; }
+    .notice {
+      background: #f0f6ff;
+      border: 1px solid #c8dff8;
+      border-radius: 6px;
+      padding: 1rem 1.2rem;
+      margin: 1.5rem 0;
+      font-size: 0.95rem;
+    }
+    footer {
+      margin-top: 3rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border);
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+    a { color: var(--accent); }
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>プライバシーポリシー</h1>
+    <p>BoothEnhanser &mdash; 最終更新: 2026年7月23日</p>
+  </header>
+
+  <div class="notice">
+    BoothEnhanserはpixiv株式会社・BOOTHとは無関係の非公式ブラウザ拡張機能です。
+  </div>
+
+  <h2>1. 収集・利用する情報</h2>
+  <p>
+    BoothEnhanserは、ユーザーがBOOTH（<code>accounts.booth.pm</code>）にログイン中のブラウザセッションを利用して、
+    好きリスト（ウィッシュリスト）の情報を取得します。
+    具体的には以下の情報をブラウザ内のみで処理します。
+  </p>
+  <ul>
+    <li>好きリストに登録されている商品名・価格・ショップ名・カテゴリ・サムネイル画像URL</li>
+    <li>年齢制限フラグ（R18/非R18）</li>
+  </ul>
+  <p>
+    これらの情報はBOOTHが提供するJSON API（<code>wish_list_name_items.json</code>）を通じて取得しており、
+    ユーザーがBOOTHにログインした状態で既に閲覧可能な情報のみにアクセスします。
+  </p>
+
+  <h2>2. データの保存場所</h2>
+  <p>
+    取得したデータはすべて<strong>ユーザーのブラウザ内（ローカル）</strong>にのみ保存されます。
+    具体的には以下のブラウザ標準ストレージを使用します。
+  </p>
+  <ul>
+    <li>IndexedDB（商品情報のキャッシュ）</li>
+    <li>ブラウザ拡張機能のストレージAPI（設定値）</li>
+  </ul>
+
+  <h2>3. 外部への情報送信</h2>
+  <p>
+    BoothEnhanserは取得したデータを外部サーバーへ送信しません。
+    開発者を含む第三者がユーザーの好きリストの内容にアクセスすることはありません。
+    分析ツール・広告ネットワーク・クラッシュレポートサービス等は一切使用していません。
+  </p>
+
+  <h2>4. アクセスするホスト</h2>
+  <p>本拡張機能が通信するドメインは以下に限定されます。</p>
+  <ul>
+    <li><code>https://booth.pm/*</code></li>
+    <li><code>https://*.booth.pm/*</code>（ショップページ・好きリストAPIを含む）</li>
+    <li><code>https://accounts.booth.pm/*</code>（好きリストページ）</li>
+  </ul>
+  <p>これらはすべてBOOTHのドメインであり、ユーザーが既にアクセスしているサービスです。</p>
+
+  <h2>5. 権限の用途</h2>
+  <ul>
+    <li><strong>host_permissions (booth.pm)</strong>: 好きリストAPIへのfetchと商品詳細ページのスクレイピングに使用</li>
+    <li><strong>storage</strong>: 商品情報のキャッシュと設定の保存に使用</li>
+    <li><strong>alarms</strong>: 定期的なデータ更新スケジューリングに使用</li>
+  </ul>
+
+  <h2>6. 子どものプライバシー</h2>
+  <p>
+    本拡張機能は13歳未満の子どもを対象としておらず、意図的に子どもの個人情報を収集することはありません。
+  </p>
+
+  <h2>7. ポリシーの変更</h2>
+  <p>
+    プライバシーポリシーを変更する場合は、このページを更新します。
+    重大な変更がある場合は、拡張機能のアップデートノートにも記載します。
+  </p>
+
+  <h2>8. お問い合わせ</h2>
+  <p>
+    本拡張機能に関するお問い合わせは
+    <a href="https://github.com/sanbongazin/BoothEnhanser/issues" target="_blank" rel="noopener">
+      GitHubのIssue
+    </a>
+    からお願いします。
+  </p>
+
+  <footer>
+    <p>BoothEnhanser は pixiv株式会社・BOOTH とは無関係の非公式ツールです。</p>
+    <p>&copy; 2026 sanbongazin. MIT License.</p>
+  </footer>
+</main>
+</body>
+</html>
