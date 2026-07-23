@@ -56,6 +56,11 @@ export function createManifest(target: BuildTarget) {
             gecko: {
               id: 'booth-enhanser@sanbongazin.github.io',
               strict_min_version: '109.0',
+              // Firefox新要件(2025~): データ収集の申告。外部送信なし・ローカル処理のみのため両配列とも空。
+              data_collection_permissions: {
+                required: [],
+                optional: [],
+              },
             },
           },
         }
